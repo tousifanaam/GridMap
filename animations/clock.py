@@ -51,7 +51,7 @@ try:
                     system(f'color 0{now}')
                     globals()['prev_color'] = now
                     break
-        if colors:
+        if colors and name == "nt":
             color()
         var = tuple(str(datetime.now()).split(" ")[1].split(".")[0].split(":"))
         h = var[0]
