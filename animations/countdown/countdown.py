@@ -1,6 +1,8 @@
+import threading
 from time import sleep
 from os import system,name
 from gridmap import GridMap as g
+from playsound import playsound
 
 # merger method
 m = g.merge
@@ -23,6 +25,11 @@ grid_obj = [
     six, five, four, three,
     two, one, zero]
 
+sounds = [
+    'ten', 'nine', 'eight', 'seven',
+    'six', 'five', 'four', 'three',
+    'two', 'one', 'zero']
+
 def clear():
     if name == "nt":
         _ = system('cls')
@@ -30,8 +37,12 @@ def clear():
         _ = system('clear')
 
 def countdown():
-    for i in grid_obj:
-        print(i.grid_without_lines())
+    for i in range(len(grid_obj)):
+        t1 = threading.Thread(target=print(grid_obj[i].grid_without_lines()))
+        t2 = threading.Thread(target=playsound(f"{sounds[i]}.wav"))
+        t1.start()
+        #sleep(0.2)
+        t2.start()
         #print(f"[*] Points: {len(i.scat_plot)}")
         #print(f"{i}")
         sleep(1)

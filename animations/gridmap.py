@@ -82,8 +82,6 @@ class GridMap:
                 else:
                     grid += "   "
             grid += "\n"
-            if border == True:
-                grid += "|\n"
         bottomline = ""
         if border == True:
             for _ in range((self.hor_len*3)+1):

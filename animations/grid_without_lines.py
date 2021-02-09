@@ -7,9 +7,15 @@ ________________
 |__|__|__|■ |__|
 
 """
-from os import system
+from os import system,name
 from time import sleep
 from random import randint
+
+def clear():
+    if name == "nt":
+        _ = system('cls')
+    else:
+        _ = system('clear')
 
 def drawgrid(l,b,scatter):
     topline = ""
@@ -29,7 +35,7 @@ def drawgrid(l,b,scatter):
     bottomline = ""
     for _ in range((b*3)+1):
         bottomline += "_"
-    system('cls')
+    clear()
     return topline + grid + bottomline
 
 a = 20

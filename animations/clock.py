@@ -1,5 +1,5 @@
 from datetime import datetime
-from os import system,sys
+from os import system,sys,name
 from time import sleep
 from random import choice
 from gridmap import GridMap as gm
@@ -27,13 +27,20 @@ grid_dict = {
     "8":eight,
     "9":nine,
     }
+
+def clear():
+    if name == "nt":
+        _ = system('cls')
+    else:
+        _ = system('clear')
+
 col_plot = [(1, 3), (2, 3), (1, 4), (2, 4), (1, 5), (2, 5), (1, 8), (2, 8), (1, 9), (2, 9), (1, 10), (2, 10)]
 col = gm(14,4,col_plot,lines=True)
 colors = False
 if "--color" in sys.argv:
     colors = True
 alph = ['a', 'b', 'c', 'd']
-system('cls')
+clear()
 prev_color = 'a'
 try:
     while True:
@@ -54,8 +61,8 @@ try:
         print(hms_grid_obj.grid_without_lines())
         #print(f"\n[*] Points: {len(hms_grid_obj.scat_plot)}")
         sleep(1)
-        system('cls')
+        clear()
 except KeyboardInterrupt:
     system('color 0f')
-    system('cls')
+    clear()
     print("Closed.")
