@@ -47,7 +47,6 @@ def conv24(time):
 	return res.rstrip(':')
 if format_12:
     sysvar = str(conv24(sysvar)).split(":")
-    print(sysvar)
 h = int(sysvar[0])
 if h > 23 or h < 0:
     raise ValueError(f"{sysvar[0]}. is not a valid hour value - 0 <= hour < 24")
