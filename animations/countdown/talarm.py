@@ -26,7 +26,7 @@ def conv24(time):
 	('hh:mm:am' or 'hh:mm:pm') or ('hh:mm:AM' or 'hh:mm:PM')
 	"""
 	l = list(time)
-	if int(l[0]) > 12 or int(l[0]) < 12:
+	if int(l[0]) > 12 or int(l[0]) < 1:
 		raise ValueError(f"{l[0]}. is not a valid hour value - 0 < hour <= 12")
 	if int(l[1]) > 60 or int(l[1]) < 0:
 		raise ValueError(f"{l[1]}. is not a valid minute value - 0 < minute <= 12")
