@@ -36,16 +36,18 @@ def clear():
     else:
         _ = system('clear')
 
-def countdown():
+def countdown(slow=False):
     for i in range(len(grid_obj)):
         t1 = threading.Thread(target=print(grid_obj[i].grid_without_lines()))
         t2 = threading.Thread(target=playsound(f"{sounds[i]}.wav"))
         t1.start()
         #sleep(0.2)
         t2.start()
+        t2.join()
         #print(f"[*] Points: {len(i.scat_plot)}")
         #print(f"{i}")
-        sleep(1)
+        if slow:
+            sleep(1)
         clear()
 
 if __name__ == '__main__':
