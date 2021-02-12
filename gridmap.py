@@ -1,3 +1,8 @@
+from collections import deque
+from time import time
+
+# version 0.2
+
 class GridMap:
     """
     return: string with points on grid. run >>> print(GridMap.demo)
@@ -37,7 +42,7 @@ class GridMap:
     4 |■_|__|__|__|__|
 
     """
-
+    
     def __init__(self, ver_len, hor_len, scat_plot=[], lines=False):
         self.ver_len = int(ver_len)
         self.hor_len = int(hor_len)
@@ -89,10 +94,11 @@ class GridMap:
         return topline + grid + bottomline
 
     @staticmethod
-    def merge(a,b):
+    def merge(a,b=None):
         """a,b: type: Gridmap object
         merge b to right of a"""
-
+        if type(a) == GridMap and b == None:
+            return a
         if type(a) != GridMap or type(b) != GridMap:
             raise TypeError("GridMap.merge - Argument(s) not a GridMap object.")
             
@@ -185,6 +191,131 @@ class GridMap:
         """return: nine as a 14*8 Gridmap Object"""
         plots = [(2, 1), (3, 1), (4, 1), (5, 1), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (1, 3), (2, 3), (5, 3), (6, 3), (1, 4), (2, 4), (5, 4), (6, 4), (1, 5), (2, 5), (5, 5), (6, 5), (1, 6), (2, 6), (3, 6), (4, 6), (5, 6), (6, 6), (2, 7), (3, 7), (4, 7), (5, 7), (6, 7), (5, 8), (6, 8), (5, 9), (6, 9), (1, 10), (5, 10), (6, 10), (1, 11), (2, 11), (3, 11), (4, 11), (5, 11), (6, 11), (2, 12), (3, 12), (4, 12), (5, 12)]
         return GridMap(14,8,plots,True)
+
+    @staticmethod
+    def colon():
+        """return: nine as a 14*5 Gridmap Object"""
+        plots = [(1, 3), (2, 3), (1, 4), (2, 4), (1, 5), (2, 5), (1, 8), (2, 8), (1, 9), (2, 9), (1, 10), (2, 10)]
+        return GridMap(14,4,plots,True)
+
+    @staticmethod
+    def space():
+        """return: space as a 14*8 Gridmap Object"""
+        plots = []
+        return GridMap(14,8,plots,True)
+
+    @staticmethod
+    def period():
+        """return: period as a 14*5 Gridmap Object"""
+        plots = [(1, 9), (2, 9), (3, 9), (1, 10), (2, 10), (3, 10), (1, 11), (2, 11), (3, 11), (1, 12), (2, 12), (3, 12)]
+        return GridMap(14,5,plots,True)
+
+    @staticmethod
+    def comma():
+        """return: comma as a 14*5 Gridmap Object"""
+        plots = [(1, 7), (2, 7), (3, 7), (1, 8), (2, 8), (3, 8), (1, 9), (2, 9), (3, 9), (2, 10), (3, 10), (2, 11), (3, 11), (1, 12), (2, 12)]
+        return GridMap(14,5,plots,True)
+
+    @staticmethod
+    def semicolon():
+        """return: semi-comma as a 14*5 Gridmap Object"""
+        plots = [(1, 3), (2, 3), (3, 3), (1, 4), (2, 4), (3, 4), (1, 5), (2, 5), (3, 5), (1, 7), (2, 7), (3, 7), (1, 8), (2, 8), (3, 8), (1, 9), (2, 9), (3, 9), (2, 10), (3, 10), (2, 11), (3, 11), (1, 12), (2, 12)]
+        return GridMap(14,5,plots,True)
+
+    @staticmethod
+    def t_upper():
+        """return: uppercase T as a 14*10 Gridmap Object"""
+        plots = [(1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1), (8, 1), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (4, 3), (5, 3), (4, 4), (5, 4), (4, 5), (5, 5), (4, 6), (5, 6), (4, 7), (5, 7), (4, 8), (5, 8), (4, 9), (5, 9), (4, 10), (5, 10), (4, 11), (5, 11), (4, 12), (5, 12)]
+        return GridMap(14,10,plots,True)
+
+    @staticmethod
+    def o_upper():
+        """return: uppercase O as a 14*10 Gridmap Object"""
+        plots = [(2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (1, 3), (2, 3), (7, 3), (8, 3), (1, 4), (2, 4), (7, 4), (8, 4), (1, 5), (2, 5), (7, 5), (8, 5), (1, 6), (2, 6), (7, 6), (8, 6), (1, 7), (2, 7), (7, 7), (8, 7), (1, 8), (2, 8), (7, 8), (8, 8), (1, 9), (2, 9), (7, 9), (8, 9), (1, 10), (2, 10), (7, 10), (8, 10), (1, 11), (2, 11), (3, 11), (4, 11), (5, 11), (6, 11), (7, 11), (8, 11), (2, 12), (3, 12), (4, 12), (5, 12), (6, 12), (7, 12)]
+        return GridMap(14,10,plots,True)
+
+    @staticmethod
+    def u_upper():
+        """return: uppercase U as a 14*10 Gridmap Object"""
+        plots = [(1, 1), (2, 1), (7, 1), (8, 1), (1, 2), (2, 2), (7, 2), (8, 2), (1, 3), (2, 3), (7, 3), (8, 3), (1, 4), (2, 4), (7, 4), (8, 4), (1, 5), (2, 5), (7, 5), (8, 5), (1, 6), (2, 6), (7, 6), (8, 6), (1, 7), (2, 7), (7, 7), (8, 7), (1, 8), (2, 8), (7, 8), (8, 8), (1, 9), (2, 9), (7, 9), (8, 9), (1, 10), (2, 10), (7, 10), (8, 10), (1, 11), (2, 11), (3, 11), (4, 11), (5, 11), (6, 11), (7, 11), (8, 11), (2, 12), (3, 12), (4, 12), (5, 12), (6, 12), (7, 12)]
+        return GridMap(14,10,plots,True)
+
+    @staticmethod
+    def s_upper():
+        """return: uppercase S as a 14*10 Gridmap Object"""
+        plots = [(1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1), (8, 1), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (1, 3), (2, 3), (1, 4), (2, 4), (1, 5), (2, 5), (1, 6), (2, 6), (3, 6), (4, 6), (5, 6), (6, 6), (7, 6), (8, 6), (1, 7), (2, 7), (3, 7), (4, 7), (5, 7), (6, 7), (7, 7), (8, 7), (7, 8), (8, 8), (7, 9), (8, 9), (7, 10), (8, 10), (1, 11), (2, 11), (3, 11), (4, 11), (5, 11), (6, 11), (7, 11), (8, 11), (1, 12), (2, 12), (3, 12), (4, 12), (5, 12), (6, 12), (7, 12), (8, 12)]
+        return GridMap(14,10,plots,True)
+
+    @staticmethod
+    def i_upper():
+        """return: uppercase I as a 14*10 Gridmap Object"""
+        plots = [(1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1), (8, 1), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (4, 3), (5, 3), (4, 4), (5, 4), (4, 5), (5, 5), (4, 6), (5, 6), (4, 7), (5, 7), (4, 8), (5, 8), (4, 9), (5, 9), (4, 10), (5, 10), (1, 11), (2, 11), (3, 11), (4, 11), (5, 11), (6, 11), (7, 11), (8, 11), (1, 12), (2, 12), (3, 12), (4, 12), (5, 12), (6, 12), (7, 12), (8, 12)]
+        return GridMap(14,10,plots,True)
+
+    @staticmethod
+    def f_upper():
+        """return: uppercase F as a 14*10 Gridmap Object"""
+        plots = [(1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1), (8, 1), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (1, 3), (2, 3), (1, 4), (2, 4), (1, 5), (2, 5), (1, 6), (2, 6), (3, 6), (4, 6), (5, 6), (6, 6), (1, 7), (2, 7), (3, 7), (4, 7), (5, 7), (6, 7), (1, 8), (2, 8), (1, 9), (2, 9), (1, 10), (2, 10), (1, 11), (2, 11), (1, 12), (2, 12)]
+        return GridMap(14,10,plots,True)
+
+    @classmethod
+    def str_to_gm(cls,s):
+        """
+        string --> GridMap
+        convert strings to GridMap object"""
+
+        grid_dict = {
+            "0":cls.zero(),
+            "1":cls.one(),
+            "2":cls.two(),
+            "3":cls.three(),
+            "4":cls.four(),
+            "5":cls.five(),
+            "6":cls.six(),
+            "7":cls.seven(),
+            "8":cls.eight(),
+            "9":cls.nine(),
+            " ":cls.space(),
+            ".":cls.period(),
+            ",":cls.comma(),
+            ":":cls.colon(),
+            ";":cls.semicolon(),
+            "T":cls.t_upper(),
+            "O":cls.o_upper(),
+            "U":cls.u_upper(),
+            "S":cls.s_upper(),
+            "I":cls.i_upper(),
+            "F":cls.f_upper(),
+            }
+
+        if len(s) == 0:
+            return None
+        try:
+            s = [grid_dict[i] for i in s]
+        except KeyError as e:
+            print(f"Gridmap.str_to_gm: {e} could not be assigned to any builtin Gridmap obj.")
+            exit()
+        s = deque(s)
+        while True:
+            l = []
+            while s:
+                a = s.popleft()
+                if len(s) != 0:
+                    b = s.popleft()
+                    l.append(cls.merge(a,b))
+                else:
+                    l.append(cls.merge(a))
+            if len(l) != 1:
+                s = deque(l)
+            else:
+                break
+        return(l[0])
+    
+    @classmethod
+    def random_number(cls):
+        """return 2-digit and rarely 1-digit 
+        true random number as a gridmap object"""
+        return cls.str_to_gm(str(time()).split(".")[1][3:5])
 
 if __name__ == '__main__':
     pass
