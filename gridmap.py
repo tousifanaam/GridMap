@@ -1,8 +1,6 @@
 from collections import deque
 from time import time
 
-__version__ = 0.2
-
 class GridMap:
     """
     return: string with points on grid. run >>> print(GridMap.demo)
@@ -19,6 +17,8 @@ class GridMap:
                if True: display with grid lines
                if False: display without the grid lines
     """
+
+    __version__ = 0.2
 
     demo = """
     A blank 5x5 grid:
@@ -93,6 +93,34 @@ class GridMap:
                 bottomline += "_"
         return topline + grid + bottomline
 
+    def v_flip(self):
+        """
+        vertically flip a gm object
+
+        From:
+        ________________
+        |__|__|__|__|__|
+        |x_|x_|x_|__|__|
+        |x_|__|__|__|__|
+        |x_|x_|__|__|__|
+        |__|__|__|__|__|
+        v_len = 5, h_len = 5
+        Plots: [(0, 1), (1, 1), (2, 1), (0, 2), (0, 3)]
+
+        To:
+        ________________
+        |__|__|__|__|__|
+        |x_|x_|__|__|__|
+        |x_|__|__|__|__|
+        |x_|x_|x_|__|__|
+        |__|__|__|__|__|
+        v_len = 5, h_len = 5
+        Plots: [(0, 1), (0, 2), (0, 3), (1, 3), (2, 3)]
+        """
+
+        plots = list(map(lambda x: (x[0],self.ver_len-x[1]-1),self.scat_plot))
+        return GridMap(self.ver_len,self.hor_len,plots,True)
+        
     @staticmethod
     def merge(a,b=None):
         """a,b: type: Gridmap object
