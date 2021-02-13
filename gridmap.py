@@ -1,7 +1,7 @@
 from collections import deque
 from time import time
 
-# version 0.2
+__version__ = 0.2
 
 class GridMap:
     """
@@ -12,7 +12,7 @@ class GridMap:
 
     ~ hor_len -> type: int, horizontal length
 
-    ~ scat_plot -> type: list, list_of: tuples, tuple_of: two int
+    ~ scat_plot -> type: list, list_of: tuples, tuple_of: ints
                    example: [(2,3),(1,3),(0,4)]
 
     ~ lines -> type: bool, default: False,
@@ -105,7 +105,7 @@ class GridMap:
         a = str(a).split("\n")
         b = str(b).split("\n")
         if len(a) != len(b):
-            raise ValueError("Invalid vertical length combination") from None
+            raise ValueError(f"{len(a)} & {len(b)} - Unequal vertical length combination") from None
         res = []
         for i in range(len(a)):
             res.append(a[i] + b[i][1:])
@@ -258,11 +258,38 @@ class GridMap:
         plots = [(1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1), (8, 1), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (1, 3), (2, 3), (1, 4), (2, 4), (1, 5), (2, 5), (1, 6), (2, 6), (3, 6), (4, 6), (5, 6), (6, 6), (1, 7), (2, 7), (3, 7), (4, 7), (5, 7), (6, 7), (1, 8), (2, 8), (1, 9), (2, 9), (1, 10), (2, 10), (1, 11), (2, 11), (1, 12), (2, 12)]
         return GridMap(14,10,plots,True)
 
+    @staticmethod
+    def c_upper():
+        """return: uppercase C as a 14*10 Gridmap Object"""
+        plots = [(2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1), (8, 1), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (1, 3), (2, 3), (1, 4), (2, 4), (1, 5), (2, 5), (1, 6), (2, 6), (1, 7), (2, 7), (1, 8), (2, 8), (1, 9), (2, 9), (1, 10), (2, 10), (1, 11), (2, 11), (3, 11), (4, 11), (5, 11), (6, 11), (7, 11), (8, 11), (2, 12), (3, 12), (4, 12), (5, 12), (6, 12), (7, 12), (8, 12)]
+        return GridMap(14,10,plots,True)
+
+    @staticmethod
+    def k_upper():
+        """return: uppercase K as a 14*10 Gridmap Object"""
+        plots = [(1, 1), (2, 1), (7, 1), (8, 1), (1, 2), (2, 2), (6, 2), (7, 2), (8, 2), (1, 3), (2, 3), (5, 3), (6, 3), (7, 3), (1, 4), (2, 4), (4, 4), (5, 4), (6, 4), (1, 5), (2, 5), (3, 5), (4, 5), (5, 5), (1, 6), (2, 6), (3, 6), (4, 6), (1, 7), (2, 7), (3, 7), (4, 7), (1, 8), (2, 8), (3, 8), (4, 8), (5, 8), (1, 9), (2, 9), (4, 9), (5, 9), (6, 9), (1, 10), (2, 10), (5, 10), (6, 10), (7, 10), (1, 11), (2, 11), (6, 11), (7, 11), (8, 11), (1, 12), (2, 12), (7, 12), (8, 12)]
+        return GridMap(14,10,plots,True)
+
+    @staticmethod
+    def bar():
+        """return: bar/pipe as a 14*4 Gridmap Object"""
+        plots = [(1, 1), (2, 1), (1, 2), (2, 2), (1, 3), (2, 3), (1, 4), (2, 4), (1, 5), (2, 5), (1, 6), (2, 6), (1, 7), (2, 7), (1, 8), (2, 8), (1, 9), (2, 9), (1, 10), (2, 10), (1, 11), (2, 11), (1, 12), (2, 12)]
+        return GridMap(14,4,plots,True)
+
+    @staticmethod
+    def e_upper():
+        """return: uppercase E as a 14*10 Gridmap Object"""
+        plots = [(1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1), (8, 1), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (1, 3), (2, 3), (1, 4), (2, 4), (1, 5), (2, 5), (1, 6), (2, 6), (3, 6), (4, 6), (5, 6), (6, 6), (1, 7), (2, 7), (3, 7), (4, 7), (5, 7), (6, 7), (1, 8), (2, 8), (1, 9), (2, 9), (1, 10), (2, 10), (1, 11), (2, 11), (3, 11), (4, 11), (5, 11), (6, 11), (7, 11), (8, 11), (1, 12), (2, 12), (3, 12), (4, 12), (5, 12), (6, 12), (7, 12), (8, 12)]
+        return GridMap(14,10,plots,True)
+
     @classmethod
-    def str_to_gm(cls,s):
+    def str_to_gm(cls,s,custom_dict=None):
         """
-        string --> GridMap
-        convert strings to GridMap object"""
+        Convert string --> GridMap
+        convert strings to GridMap object
+
+        custom_dict -> (optional) type:dict, to add or override
+        any existing key in main conversion dict"""
 
         grid_dict = {
             "0":cls.zero(),
@@ -286,31 +313,64 @@ class GridMap:
             "S":cls.s_upper(),
             "I":cls.i_upper(),
             "F":cls.f_upper(),
+            "C":cls.c_upper(),
+            "K":cls.k_upper(),
+            "|":cls.bar(),
+            "E":cls.e_upper(),
             }
-
+        if custom_dict != None and type(custom_dict) == dict:
+            for k,v in custom_dict.items():
+                if type(k) == str:
+                    if len(k) == 1 and type(v) == GridMap:
+                        grid_dict[k] = v
+                else:
+                    raise ValueError("Custom dict could not be validated.")
+        multiple_lines = False
+        if "\n" in s:
+            multiple_lines = True
+            if custom_dict != None:
+                done_list = [GridMap.str_to_gm(i,custom_dict=custom_dict) for i in s.split("\n")]
+            else:
+                done_list = [GridMap.str_to_gm(i) for i in s.split("\n")]
         if len(s) == 0:
             return None
-        try:
-            s = [grid_dict[i] for i in s]
-        except KeyError as e:
-            print(f"Gridmap.str_to_gm: {e} could not be assigned to any builtin Gridmap obj.")
-            exit()
-        s = deque(s)
-        while True:
-            l = []
-            while s:
-                a = s.popleft()
-                if len(s) != 0:
-                    b = s.popleft()
-                    l.append(cls.merge(a,b))
+        if not multiple_lines:
+            try:
+                s = [grid_dict[i] for i in s]
+            except KeyError as e:
+                if custom_dict == None:
+                    print(f"Gridmap.str_to_gm: {e} could not assign to any built-in Gridmap obj.")
                 else:
-                    l.append(cls.merge(a))
-            if len(l) != 1:
-                s = deque(l)
-            else:
-                break
+                    print(f"Gridmap.str_to_gm: {e} could assign to any Gridmap obj.")
+                exit()
+            s = deque(s)
+            while True:
+                l = []
+                while s:
+                    a = s.popleft()
+                    if len(s) != 0:
+                        b = s.popleft()
+                        l.append(cls.merge(a,b))
+                    else:
+                        l.append(cls.merge(a))
+                if len(l) != 1:
+                    s = deque(l)
+                else:
+                    break
+        if multiple_lines:
+            h_len =  max([i.hor_len for i in done_list])
+            v_len = sum([i.ver_len for i in done_list])
+            plots = []
+            load = 0
+            for i in done_list:
+                points = i.scat_plot
+                for p in points:
+                    v = (p[0],p[1]+load)
+                    plots.append(v)
+                load += i.ver_len
+            return GridMap(v_len,h_len,plots,True)
         return(l[0])
-    
+
     @classmethod
     def random_number(cls):
         """return 2-digit and rarely 1-digit 
