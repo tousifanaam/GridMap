@@ -55,7 +55,10 @@ if m > 59 or h < 0:
     raise ValueError(f"{sysvar[1]}. is not a valid minute value - 0 <= minute < 60")
 
 end_at = (h,m)
-
+current_time = tuple([int(i) for i in tuple(str(datetime.now()).split(" ")[1].split(".")[0].split(":"))])
+if end_at == current_time[:2] and current_time[2] != 0:
+    print("talarm: Time reached already!")
+    exit()
 # GridMap objects
 zero = gm.zero()
 one = gm.one()
