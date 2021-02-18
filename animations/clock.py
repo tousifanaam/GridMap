@@ -1,5 +1,5 @@
 from datetime import datetime
-from os import system,sys,name
+from os import system, sys, name
 from time import sleep
 from random import choice
 from gridmap import GridMap as gm
@@ -16,17 +16,18 @@ eight = gm.eight()
 nine = gm.nine()
 
 grid_dict = {
-    "0":zero,
-    "1":one,
-    "2":two,
-    "3":three,
-    "4":four,
-    "5":five,
-    "6":six,
-    "7":seven,
-    "8":eight,
-    "9":nine,
-    }
+    "0": zero,
+    "1": one,
+    "2": two,
+    "3": three,
+    "4": four,
+    "5": five,
+    "6": six,
+    "7": seven,
+    "8": eight,
+    "9": nine,
+}
+
 
 def clear():
     if name == "nt":
@@ -34,8 +35,10 @@ def clear():
     else:
         _ = system('clear')
 
-col_plot = [(1, 3), (2, 3), (1, 4), (2, 4), (1, 5), (2, 5), (1, 8), (2, 8), (1, 9), (2, 9), (1, 10), (2, 10)]
-col = gm(14,4,col_plot,lines=True)
+
+col_plot = [(1, 3), (2, 3), (1, 4), (2, 4), (1, 5), (2, 5),
+            (1, 8), (2, 8), (1, 9), (2, 9), (1, 10), (2, 10)]
+col = gm(14, 4, col_plot, lines=True)
 colors = False
 if "--color" in sys.argv:
     colors = True
@@ -57,7 +60,7 @@ try:
         h = var[0]
         m = var[1]
         s = var[2]
-        hms_grid_obj = gm.merge(gm.merge(gm.merge(gm.merge(grid_dict[h[0]],grid_dict[h[1]]),col),gm.merge(gm.merge(grid_dict[m[0]],grid_dict[m[1]]),col)),gm.merge(grid_dict[s[0]],grid_dict[s[1]]))
+        hms_grid_obj = gm.merge(gm.merge(gm.merge(gm.merge(grid_dict[h[0]], grid_dict[h[1]]), col), gm.merge(gm.merge(grid_dict[m[0]], grid_dict[m[1]]), col)), gm.merge(grid_dict[s[0]], grid_dict[s[1]]))
         print(hms_grid_obj.grid_without_lines())
         #print(f"\n[*] Points: {len(hms_grid_obj.scat_plot)}")
         sleep(1)
