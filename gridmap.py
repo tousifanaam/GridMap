@@ -379,12 +379,34 @@ class GridMap:
     
     @staticmethod
     def x_upper():
+        """return: uppercase X as a 14*10 Gridmap Object"""
         plots = [(1, 1), (8, 1), (1, 2), (2, 2), (7, 2), (8, 2), (1, 3), (2, 3), (3, 3), (6, 3), (7, 3), (8, 3), (2, 4), (3, 4), (4, 4), (5, 4), (6, 4), (7, 4), (3, 5), (4, 5), (5, 5), (6, 5), (4, 6), (5, 6),
                  (4, 7), (5, 7), (3, 8), (4, 8), (5, 8), (6, 8), (2, 9), (3, 9), (4, 9), (5, 9), (6, 9), (7, 9), (1, 10), (2, 10), (3, 10), (6, 10), (7, 10), (8, 10), (1, 11), (2, 11), (7, 11), (8, 11), (1, 12), (8, 12)]
         return GridMap(14, 10, plots, True)
 
+    @staticmethod
+    def n_upper():
+        """return: uppercase N as a 14*10 Gridmap Object"""
+        plots = [(1, 1), (2, 1), (7, 1), (8, 1), (1, 2), (2, 2), (3, 2), (7, 2), (8, 2), (1, 3), (2, 3), (3, 3), (7, 3), (8, 3), (1, 4), (2, 4), (3, 4), (4, 4), (7, 4), (8, 4), (1, 5), (2, 5), (3, 5), (4, 5), (7, 5), (8, 5), (1, 6), (2, 6), (4, 6), (5, 6), (7, 6), (8, 6), (1, 7),
+                 (2, 7), (4, 7), (5, 7), (7, 7), (8, 7), (1, 8), (2, 8), (5, 8), (6, 8), (7, 8), (8, 8), (1, 9), (2, 9), (5, 9), (6, 9), (7, 9), (8, 9), (1, 10), (2, 10), (6, 10), (7, 10), (8, 10), (1, 11), (2, 11), (6, 11), (7, 11), (8, 11), (1, 12), (2, 12), (7, 12), (8, 12)]
+        return GridMap(14, 10, plots, True)
+
+    @staticmethod
+    def h_upper():
+        """return: uppercase H as a 14*10 Gridmap Object"""
+        plots = [(1, 1), (2, 1), (7, 1), (8, 1), (1, 2), (2, 2), (7, 2), (8, 2), (1, 3), (2, 3), (7, 3), (8, 3), (1, 4), (2, 4), (7, 4), (8, 4), (1, 5), (2, 5), (7, 5), (8, 5), (1, 6), (2, 6), (3, 6), (4, 6), (5, 6), (6, 6), (7, 6), (8, 6),
+                 (1, 7), (2, 7), (3, 7), (4, 7), (5, 7), (6, 7), (7, 7), (8, 7), (1, 8), (2, 8), (7, 8), (8, 8), (1, 9), (2, 9), (7, 9), (8, 9), (1, 10), (2, 10), (7, 10), (8, 10), (1, 11), (2, 11), (7, 11), (8, 11), (1, 12), (2, 12), (7, 12), (8, 12)]
+        return GridMap(14, 10, plots, True)
+
+    @staticmethod
+    def d_upper():
+        """return: uppercase D as a 14*10 Gridmap Object"""
+        plots = [(1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (1, 3), (2, 3), (5, 3), (6, 3), (7, 3), (1, 4), (2, 4), (6, 4), (7, 4), (8, 4), (1, 5), (2, 5), (7, 5), (8, 5), (1, 6), (2, 6), (7, 6), (8, 6), (1, 7),
+                 (2, 7), (7, 7), (8, 7), (1, 8), (2, 8), (7, 8), (8, 8), (1, 9), (2, 9), (6, 9), (7, 9), (8, 9), (1, 10), (2, 10), (5, 10), (6, 10), (7, 10), (1, 11), (2, 11), (3, 11), (4, 11), (5, 11), (6, 11), (1, 12), (2, 12), (3, 12), (4, 12), (5, 12)]
+        return GridMap(14, 10, plots, True)
+
     @classmethod
-    def str_to_gm(cls, s, custom_dict=None):
+    def str_to_gm(cls, s, custom_dict=None, uppercase=False, lowercase=False):
         """
         Convert string --> GridMap
         convert strings to GridMap object
@@ -419,6 +441,9 @@ class GridMap:
             "|": cls.bar(),
             "E": cls.e_upper(),
             "X":cls.x_upper(),
+            "N":cls.n_upper(),
+            "H":cls.h_upper(),
+            "D":cls.d_upper(),
         }
         if custom_dict != None and type(custom_dict) == dict:
             for k, v in custom_dict.items():
@@ -428,6 +453,10 @@ class GridMap:
                 else:
                     raise ValueError("Custom dict could not be validated.")
         multiple_lines = False
+        if uppercase == True:
+            s = s.upper()
+        if lowercase == True:
+            s = s.lower()
         if "\n" in s:
             multiple_lines = True
             if custom_dict != None:
@@ -483,4 +512,9 @@ class GridMap:
         return cls.str_to_gm(str(time()).split(".")[1][3:5])
 
 if __name__ == '__main__':
+    print(GridMap(2,6).grid_with_lines())
+    print()
+    print(GridMap(3,6).grid_with_lines())
+    print()
+    print(GridMap(4,6).grid_with_lines())
     pass
