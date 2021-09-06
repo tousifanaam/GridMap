@@ -44,11 +44,12 @@ class GridMap:
 
     """
 
-    def __init__(self, ver_len, hor_len, scat_plot=[], lines=False):
+    def __init__(self, ver_len, hor_len, scat_plot=[], lines=False, char="■"):
         self.ver_len = int(ver_len)
         self.hor_len = int(hor_len)
         self.scat_plot = scat_plot
         self.plot_count = len(self.scat_plot)
+        self.char = char
         self.lines = lines
 
     def __repr__(self) -> str:
@@ -60,7 +61,7 @@ class GridMap:
         else:
             return self.grid_without_lines()
 
-    def grid_with_lines(self, char="■"):
+    def grid_with_lines(self):
         topline = ""
         for _ in range((self.hor_len*3)+1):
             topline += "_"
@@ -70,13 +71,13 @@ class GridMap:
             grid += "|"
             for x in range(self.hor_len):
                 if (x, y) in self.scat_plot:
-                    grid += f"{char}_|"
+                    grid += f"{self.char}_|"
                 else:
                     grid += "__|"
             grid += "\n"
         return topline + grid
 
-    def grid_without_lines(self, char="■", border=False):
+    def grid_without_lines(self, border=False):
         topline = ""
         for _ in range((self.hor_len*3)+1):
             topline += " "
@@ -88,7 +89,7 @@ class GridMap:
             grid += " "
             for x in range(self.hor_len):
                 if (x, y) in self.scat_plot:
-                    grid += f"{char}  "
+                    grid += f"{self.char}  "
                 else:
                     grid += "   "
             grid += "\n"
@@ -124,7 +125,7 @@ class GridMap:
         """
         plots = list(
             map(lambda x: (x[0], self.ver_len-x[1]-1), self.scat_plot))
-        return GridMap(self.ver_len, self.hor_len, plots, True)
+        self.scat_plot = plots
 
     def hflip(self):
         """
@@ -152,22 +153,52 @@ class GridMap:
         """
         plots = list(
             map(lambda x: (self.hor_len-x[0]-1, x[1]), self.scat_plot))
-        return GridMap(self.ver_len, self.hor_len, plots, True)
-    
+        self.scat_plot = plots
+
     def r_rotate(self):
         """rotate right any gridmap obj"""
         plots = list(map(lambda x: (
             self.ver_len-x[0]-1, x[1]), list(map(lambda x: (x[1], x[0]), self.scat_plot))))
-        return GridMap(self.hor_len, self.ver_len, plots, True)
+        self.scat_plot = plots
 
     def l_rotate(self):
         """rotate left any gridmap obj"""
         plots = list(
             map(lambda x: (x[0], self.hor_len-x[1]-1), list(map(lambda x: (x[1], x[0]), self.scat_plot))))
-        return GridMap(self.hor_len, self.ver_len, plots, True)
+        self.scat_plot = plots
+
+    def addrow_down(self, n: int = 1):
+
+        self.ver_len += n
+        self.scat_plot = [(i[0], i[1]) for i in self.scat_plot]
+
+    def addrow_up(self, n: int = 1):
+
+        self.ver_len += n
+        self.scat_plot = [(i[0], i[1] + n) for i in self.scat_plot]
+
+    def addrow(self, n: int = 1):
+
+        self.ver_len += n
+        self.scat_plot = [(i[0], i[1] + n // 2) for i in self.scat_plot]
+
+    def addcolumn_right(self, n: int = 1):
+
+        self.hor_len += n
+        self.scat_plot = [(i[0], i[1]) for i in self.scat_plot]
+
+    def addcolumn_left(self, n: int = 1):
+
+        self.hor_len += n
+        self.scat_plot = [(i[0] + n, i[1]) for i in self.scat_plot]
+
+    def addcolumn(self, n: int = 1):
+
+        self.hor_len += n
+        self.scat_plot = [(i[0] + n // 2, i[1]) for i in self.scat_plot]
 
     @staticmethod
-    def merge(a, b=None):
+    def merge(a, b=None, force_merge=False, char="■"):
         """a,b: type: Gridmap object
         merge b to right of a"""
         if type(a) == GridMap and b == None:
@@ -175,12 +206,35 @@ class GridMap:
         if type(a) != GridMap or type(b) != GridMap:
             raise TypeError(
                 "GridMap.merge - Argument(s) not a GridMap object.")
-
+        if not a.lines:
+            a = GridMap(a.ver_len, a.hor_len, a.scat_plot, True)
+        if not b.lines:
+            b = GridMap(b.ver_len, b.hor_len, b.scat_plot, True)
+        m, n = a, b
         a = str(a).split("\n")
         b = str(b).split("\n")
+        error, switch = False, False
         if len(a) != len(b):
+            error = True
+            if len(a) < len(b):
+                m, n = (n, m)
+                switch = True
+            if (m.ver_len - n.ver_len) % 2 == 0:
+                n.addrow(m.ver_len - n.ver_len)
+                error = False
+        if error and force_merge:
+            n.addrow(m.ver_len - n.ver_len)
+            n.addrow_up(m.ver_len - n.ver_len)
+            error = False
+        if switch:
+            a, b = (n, m)
+        else:
+            a, b = (m, n)
+        a = str(a).split("\n")
+        b = str(b).split("\n")
+        if error:
             raise ValueError(
-                f"{len(a)} & {len(b)} - Unequal vertical length combination") from None
+                f"{len(a) - 2} & {len(b) - 2} - Unequal vertical length combination") from None
         res = []
         for i in range(len(a)):
             res.append(a[i] + b[i][1:])
@@ -197,7 +251,7 @@ class GridMap:
             cross_found = False
             x = 0
             for i in check:
-                if i == "■":
+                if i == char:
                     cross_found = True
                 if i == "|":
                     if cross_found:
@@ -206,6 +260,16 @@ class GridMap:
                     cross_found = False
             y += 1
         return GridMap(l, b, plots, True)
+
+    @classmethod
+    def merge_many(cls, *args, force_merge=False, char="■"):
+        "merge multiple Gridmap objects together"
+        args = list(args)
+        foo = args.pop()
+        while args:
+            foo = cls.merge(foo, args.pop(),
+                            force_merge=force_merge, char=char)
+        return foo
 
     @staticmethod
     def zero():
@@ -380,7 +444,7 @@ class GridMap:
         plots = [(1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1), (8, 1), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (1, 3), (2, 3), (1, 4), (2, 4), (1, 5), (2, 5), (1, 6), (2, 6), (3, 6), (4, 6), (5, 6), (6, 6), (1, 7),
                  (2, 7), (3, 7), (4, 7), (5, 7), (6, 7), (1, 8), (2, 8), (1, 9), (2, 9), (1, 10), (2, 10), (1, 11), (2, 11), (3, 11), (4, 11), (5, 11), (6, 11), (7, 11), (8, 11), (1, 12), (2, 12), (3, 12), (4, 12), (5, 12), (6, 12), (7, 12), (8, 12)]
         return GridMap(14, 10, plots, True)
-    
+
     @staticmethod
     def x_upper():
         """return: uppercase X as a 14*10 Gridmap Object"""
@@ -478,7 +542,7 @@ class GridMap:
         plots = [(1, 1), (2, 1), (7, 1), (8, 1), (1, 2), (2, 2), (3, 2), (6, 2), (7, 2), (8, 2), (1, 3), (2, 3), (3, 3), (6, 3), (7, 3), (8, 3), (1, 4), (2, 4), (3, 4), (4, 4), (5, 4), (6, 4), (7, 4), (8, 4), (1, 5), (2, 5), (4, 5), (5, 5), (7, 5), (8, 5),
                  (1, 6), (2, 6), (4, 6), (5, 6), (7, 6), (8, 6), (1, 7), (2, 7), (7, 7), (8, 7), (1, 8), (2, 8), (7, 8), (8, 8), (1, 9), (2, 9), (7, 9), (8, 9), (1, 10), (2, 10), (7, 10), (8, 10), (1, 11), (2, 11), (7, 11), (8, 11), (1, 12), (2, 12), (7, 12), (8, 12)]
         return GridMap(14, 10, plots, True)
-    
+
     @staticmethod
     def w_upper():
         """return: uppercase W as a 14.10 Gridmap Object"""
@@ -525,32 +589,32 @@ class GridMap:
             ",": cls.comma(),
             ":": cls.colon(),
             ";": cls.semicolon(),
-            "A":cls.a_upper(),
-            "B":cls.b_upper(),
-            "C":cls.c_upper(),
-            "D":cls.d_upper(),
-            "E":cls.e_upper(),
-            "F":cls.f_upper(),
-            "G":cls.g_upper(),
-            "H":cls.h_upper(),
-            "I":cls.i_upper(),
-            "J":cls.j_upper(),
-            "K":cls.k_upper(),
-            "L":cls.l_upper(),
-            "M":cls.m_upper(),
-            "N":cls.n_upper(),
-            "O":cls.o_upper(),
-            "P":cls.p_upper(),
-            "Q":cls.q_upper(),
-            "R":cls.r_upper(),
-            "S":cls.s_upper(),
-            "T":cls.t_upper(),
-            "U":cls.u_upper(),
-            "V":cls.v_upper(),
-            "W":cls.w_upper(),
-            "X":cls.x_upper(),
-            "Y":cls.y_upper(),
-            "Z":cls.z_upper(),
+            "A": cls.a_upper(),
+            "B": cls.b_upper(),
+            "C": cls.c_upper(),
+            "D": cls.d_upper(),
+            "E": cls.e_upper(),
+            "F": cls.f_upper(),
+            "G": cls.g_upper(),
+            "H": cls.h_upper(),
+            "I": cls.i_upper(),
+            "J": cls.j_upper(),
+            "K": cls.k_upper(),
+            "L": cls.l_upper(),
+            "M": cls.m_upper(),
+            "N": cls.n_upper(),
+            "O": cls.o_upper(),
+            "P": cls.p_upper(),
+            "Q": cls.q_upper(),
+            "R": cls.r_upper(),
+            "S": cls.s_upper(),
+            "T": cls.t_upper(),
+            "U": cls.u_upper(),
+            "V": cls.v_upper(),
+            "W": cls.w_upper(),
+            "X": cls.x_upper(),
+            "Y": cls.y_upper(),
+            "Z": cls.z_upper(),
         }
         if custom_dict != None and type(custom_dict) == dict:
             for k, v in custom_dict.items():
@@ -617,6 +681,7 @@ class GridMap:
         """return 2-digit and rarely 1-digit 
         true random number as a gridmap object"""
         return cls.str_to_gm(str(time()).split(".")[1][3:5])
+
 
 if __name__ == '__main__':
     pass
