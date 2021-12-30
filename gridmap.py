@@ -376,6 +376,25 @@ class GridMap:
         return GridMap(14, 5, plots, True)
 
     @staticmethod
+    def parenthesis(left: bool, right: bool):
+        """return: parenthesis as a 14*5 Gridmap Object"""
+        plots = [(3, 1), (4, 1), (2, 2), (3, 2), (4, 2), (1, 3), (2, 3), (1, 4), (2, 4), (1, 5), (2, 5), (1, 6), (2, 6),
+                 (1, 7), (2, 7), (1, 8), (2, 8), (1, 9), (2, 9), (1, 10), (2, 10), (2, 11), (3, 11), (4, 11), (3, 12), (4, 12)]
+        if left:
+            return GridMap(14, 5, plots, True)
+        elif right:
+            foo = GridMap(14, 5, plots, True)
+            foo.hflip()
+            return foo
+
+    @staticmethod
+    def equals():
+        """return: equals sign as a 14*5 Gridmap Object"""
+        plots = [(0, 4), (1, 4), (2, 4), (3, 4), (4, 4), (0, 5), (1, 5), (2, 5), (3, 5), (4, 5),
+                 (0, 8), (1, 8), (2, 8), (3, 8), (4, 8), (0, 9), (1, 9), (2, 9), (3, 9), (4, 9)]
+        return GridMap(14, 5, plots, True)
+
+    @staticmethod
     def t_upper():
         """return: uppercase T as a 14*10 Gridmap Object"""
         plots = [(1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1), (8, 1), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (4, 3), (5, 3),
@@ -565,7 +584,7 @@ class GridMap:
         return GridMap(14, 10, plots, True)
 
     @classmethod
-    def str_to_gm(cls, s, custom_dict=None, uppercase=False, lowercase=False):
+    def str_to_gm(cls, s, custom_dict: dict = None, uppercase=False, lowercase=False):
         """
         Convert string --> GridMap
         convert strings to GridMap object
@@ -589,6 +608,9 @@ class GridMap:
             ",": cls.comma(),
             ":": cls.colon(),
             ";": cls.semicolon(),
+            "(": cls.parenthesis(left=True, right=False),
+            ")": cls.parenthesis(left=False, right=True),
+            "=": cls.equals(),
             "A": cls.a_upper(),
             "B": cls.b_upper(),
             "C": cls.c_upper(),
@@ -678,10 +700,10 @@ class GridMap:
 
     @classmethod
     def random_number(cls):
-        """return 2-digit and rarely 1-digit 
+        """return 2-digit and rarely 1-digit
         true random number as a gridmap object"""
         return cls.str_to_gm(str(time()).split(".")[1][3:5])
 
 
 if __name__ == '__main__':
-    pass
+    print(GridMap.str_to_gm("TO\nOU\nSIF").grid_without_lines())
