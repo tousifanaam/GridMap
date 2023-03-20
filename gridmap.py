@@ -1,3 +1,6 @@
+from time import sleep
+
+
 class NotPlottableError(Exception):
     pass
 
@@ -37,6 +40,8 @@ class GridMap:
                     (14, 5, (7, 1), (7, 2), (7, 3), (8, 1), (8, 2), (8, 3), (9, 1), (9, 2), (9, 3), (10, 2), (10, 3), (11, 2), (11, 3), (12, 1), (12, 2)),
             ':':
                     (14, 5, (3, 1), (3, 2), (4, 1), (4, 2), (5, 1), (5, 2), (8, 1), (8, 2), (9, 1), (9, 2), (10, 1), (10, 2)),
+            '\'':
+                    (14, 5, (1, 1), (1, 2), (1, 3), (2, 1), (2, 2), (2, 3), (3, 1), (3, 2), (3, 3), (4, 2), (4, 3), (5, 2), (5, 3), (6, 1), (6, 2)),
             ';':
                     (14, 5, (3, 1), (3, 2), (3, 3), (4, 1), (4, 2), (4, 3), (5, 1), (5, 2), (5, 3), (7, 1), (7, 2), (7, 3), (8, 1), (8, 2), (8, 3), (9, 1), (9, 2), (9, 3), (10, 2), (10, 3), (11, 2), (11, 3), (12, 1), (12, 2)),
             '(':
@@ -99,12 +104,14 @@ class GridMap:
                     (14, 10, (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (2, 7), (2, 8), (3, 7), (3, 8), (4, 7), (4, 8), (5, 6), (5, 7), (6, 5), (6, 6), (7, 4), (7, 5), (8, 3), (8, 4), (9, 2), (9, 3), (10, 1), (10, 2), (11, 1), (11, 2), (11, 3), (11, 4), (11, 5), (11, 6), (11, 7), (11, 8), (12, 1), (12, 2), (12, 3), (12, 4), (12, 5), (12, 6), (12, 7), (12, 8)),
     }
 
+    NUM_CHARS = ['\u2460', '\u2461', '\u2462', '\u2463', '\u2464', '\u2465', '\u2466', '\u2467', '\u2468']
+    SQR_CHARS = ["■", "⬛"]
 
     def __init__(self, r, c, *plots, char="■"):
         self.r = r # row
         self.c = c # column
         self.char = char
-        self._plots = None
+        self._plots = None # this stores a dictionary
         self.plots = plots # [(rowX0, columnY0), ...]
 
     def shape(self):
@@ -126,6 +133,10 @@ class GridMap:
                 raise NotPlottableError(
                     f"Can't plot {i[0], i[1]} in a {self.r} * {self.c} grid.")
         self._plots = plot_dict
+
+    @property
+    def listplots(self):
+        return [(r, i) for r in range(self.r) for i in self.plots[r]]
 
     def arange_plots(self):
         if isinstance(self.plots, dict):
@@ -182,7 +193,7 @@ class GridMap:
             self._plots[i] = []
         self.r += count
 
-    def addrow(self, count: int) -> None:
+    def addrow_ud(self, count: int) -> None:
         self.addrow_up((c := count // 2))
         if count % 2 == 0:
             self.addrow_down(c)
@@ -197,12 +208,72 @@ class GridMap:
     def addcolumn_right(self, count: int) -> None:
         self.c += count    
 
-    def addcolumn(self, count: int) -> None:
+    def addcolumn_rl(self, count: int) -> None:
         self.addcolumn_left((c := count // 2))
         if count % 2 == 0:
             self.addcolumn_right(c)
         else:
             self.addcolumn_right(count - c)
+
+    def removecolumn_rl(self, count: int) -> None:
+        self.removecolumn_left((c := count // 2))
+        if count % 2 == 0:
+            self.removecolumn_right(c)
+        else:
+            self.removecolumn_right(count - c)
+
+    def removerow_up(self, count: int) -> None:
+        for i in range(count):
+            del self._plots[i]
+        for i in range(count, self.r):
+            self._plots[i - count] = self._plots.pop(i)
+        self.r -= count
+
+    def removerow_down(self, count: int) -> None:
+        for i in range(self.r - 1, self.r - count - 1, -1):
+            del self._plots[i]
+        self.r -= count
+
+    def removerow_ud(self, count: int) -> None:
+        c = count // 2
+        self.removerow_up(c)
+        if count % 2 == 0:
+            self.removerow_down(c)
+        else:
+            self.removerow_down(count - c)
+
+    def removecolumn_right(self, count: int) -> None:
+        self.c -= count
+        for k in self._plots:
+            for n, v in enumerate(self._plots[k]):
+                if v >= self.c:
+                    self._plots[k] = self._plots[k][:n]
+
+    def removecolumn_left(self, count: int) -> None:
+        self.c -= count
+        for k, v in self._plots.items():
+            self._plots[k] = [c for c in [i - count for i in v] if c >= 0]
+
+    def addrow(self, rowidx: int, count: int) -> None:
+        foo = self.copy()
+        foo.removerow_up(rowidx - 1)
+        foo.addrow_up(count)
+        self.removerow_down(self.r - rowidx + 1)
+        n = self.bottom_merge(self, foo)
+        self.r, self.c = n.r, n.c
+        self.plots = n.listplots
+
+    def removerow(self, rowidx) -> None:
+        self._plots[rowidx] = []
+        for i in range(rowidx, self.r - 1):
+            self._plots[i] = self._plots[i + 1]
+        del self._plots[self.r - 1]
+        self.r -= 1
+
+    def removecolumn(self, colidx: int) -> None:
+        for k, v in self._plots.items():
+            self._plots[k] = [i for i in v if i < colidx] + [i - 1 for i in v if i > colidx]
+        self.removecolumn_right(1)
 
     def copy(self):
         res = GridMap(self.r, self.c)
@@ -219,9 +290,9 @@ class GridMap:
         if foo0.r != foo1.r:
             if force_merge:
                 if foo0.r < foo1.r:
-                    foo0.addrow(foo1.r - foo0.r)
+                    foo0.addrow_ud(foo1.r - foo0.r)
                 else:
-                    foo1.addrow(foo0.r - foo1.r)
+                    foo1.addrow_ud(foo0.r - foo1.r)
             else:
                 raise NotMergeableError(f"Failed to merge varying row counts.")
         for r, c in foo1._plots.items():
@@ -241,9 +312,9 @@ class GridMap:
         if foo0.c != foo1.c:
             if force_merge:
                 if foo0.c < foo1.c:
-                    foo0.addcolumn(foo1.c - foo0.c)
+                    foo0.addcolumn_rl(foo1.c - foo0.c)
                 else:
-                    foo1.addcolumn(foo0.c - foo1.c)
+                    foo1.addcolumn_rl(foo0.c - foo1.c)
             else:
                 raise NotMergeableError(f"Failed to merge varying column counts.")
         res = cls(foo0.r + foo1.r, foo0.c)
@@ -252,6 +323,36 @@ class GridMap:
         for k, v in foo1.plots.items():
             res._plots[k + foo0.r] = v
         return res
+    
+    @classmethod
+    def animate(cls, frames: list, *, r: int = None, c: int = None, time_delay: float or int = 0.5, correction: int = 1, style: int = 0):
+        """
+        r: int -> frame size vertically
+        c: int -> frame size horizontally
+        frames: list -> a list containing list of frame plots in sublists
+        time_delay: int or float -> frame change delay
+        correction: int
+        """
+        if r is None:
+            r = max([a[0] for a in [i[-1] for i in frames]]) + 1
+        if c is None:
+            c = max([a[1] for a in [i[-1] for i in frames]]) + 1
+        frame = cls(r, c)
+        while True:
+            for i in frames:
+                frame.plots = i
+                if style == 0:
+                    print(frame)
+                elif style == 1:
+                    print(frame.cells())
+                    if correction == 1:
+                        correction += 1
+                elif style == 2:
+                    print(frame.font2())
+                    if correction == 1:
+                        correction += 1
+                sleep(time_delay)
+                print("\033[{}A".format(frame.r + correction))
     
     def __add__(self, _o):
         return self.side_merge(self, _o)
@@ -271,6 +372,10 @@ class GridMap:
             for i in foo[1:]:
                 res = res.bottom_merge(res, i, force_merge=force_merge)
             return res
+
+    @classmethod
+    def strlist_to_animate(cls, *sl: list, time_delay: int or float = 0.5, r: int = None, c: int = None, correction: int = 1, style: int = 0):
+        cls.animate([cls.str_to_gm(i).listplots for i in sl], time_delay=time_delay, r=r, c=c, correction=correction, style=style)
         
     def invert(self):
         plots = []
@@ -313,4 +418,40 @@ class GridMap:
 
 
 if __name__ == "__main__":
-    pass
+
+    import time
+
+    def animation0(r: int, char = GridMap.SQR_CHARS[0]):
+        assert(isinstance(r, int) and r > 1), "argument must be a positive integer which is greater than 1."
+        assert(r % 2 != 0), "row count cannot be an even number"
+        a = GridMap(r, r, (r//2, r//2), char=char)
+
+        def precompute_neighbours(r):
+            neighbours = {}
+            for row in range(r):
+                for col in range(r):
+                    n = set((row + dr, col + dc) for dr in [-1, 0, 1] for dc in [-1, 0, 1] if (dr != 0 or dc != 0) and (0 <= row + dr < r) and (0 <= col + dc < r))
+                    neighbours[(row,col)] = n
+            return neighbours
+
+        neighbours = precompute_neighbours(r)
+
+        animation_plots = [a.listplots]
+
+        for i in range(r//2):
+            if i == 0:
+                a.plots = a.listplots + list(neighbours[(a.r //2,a.r //2)])
+                animation_plots.append(a.listplots)
+            else:
+                n = []
+                for i in a.listplots:
+                    n += list(neighbours[i])
+                a.plots = list(set(n))
+                animation_plots.append(a.listplots)
+
+        GridMap.animate(animation_plots, time_delay=0.1, r=r, c=r)
+        
+    # a.plots = plots = a.listplots + [(i, i) for i in range(a.r)] # d1
+    # a.plots = plots = a.listplots + [(i, a.r - i - 1) for i in range(a.r)] # d2
+
+    animation0(17)
