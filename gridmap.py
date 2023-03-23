@@ -325,7 +325,7 @@ class GridMap:
         return res
     
     @classmethod
-    def animate(cls, frames: list, *, r: int = None, c: int = None, time_delay: float or int = 0.5, correction: int = 1, style: int = 0, max_loops):
+    def animate(cls, frames: list, *, r: int = None, c: int = None, time_delay: float or int = 0.5, correction: int = 1, style: int = 0, max_loops: int = None):
         """
         r: int -> frame size vertically
         c: int -> frame size horizontally
