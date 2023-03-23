@@ -338,8 +338,9 @@ class GridMap:
         if c is None:
             c = max([a[1] for a in [i[-1] for i in frames]]) + 1
         frame = cls(r, c)
-        assert isinstance(max_loops, int) and max_loops > 0, "arg: max_loops must be an integer and greater than 0."
         max_loops = float("inf") if max_loops == None else max_loops
+        if max_loops != float("inf"):
+            assert isinstance(max_loops, int) and max_loops > 0, "arg: max_loops must be an integer and greater than 0."
         count = 0
         while count < max_loops:
             for i in frames:
@@ -453,7 +454,7 @@ if __name__ == "__main__":
                 a.plots = list(set(n))
                 animation_plots.append(a.listplots)
 
-        GridMap.animate(animation_plots, time_delay=0.1, r=r, c=r)
+        GridMap.animate(animation_plots, time_delay=0.05, r=r, c=r)
         
     # a.plots = plots = a.listplots + [(i, i) for i in range(a.r)] # d1
     # a.plots = plots = a.listplots + [(i, a.r - i - 1) for i in range(a.r)] # d2
