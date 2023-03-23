@@ -325,7 +325,7 @@ class GridMap:
         return res
     
     @classmethod
-    def animate(cls, frames: list, *, r: int = None, c: int = None, time_delay: float or int = 0.5, correction: int = 1, style: int = 0):
+    def animate(cls, frames: list, *, r: int = None, c: int = None, time_delay: float or int = 0.5, correction: int = 1, style: int = 0, max_loops):
         """
         r: int -> frame size vertically
         c: int -> frame size horizontally
@@ -338,7 +338,10 @@ class GridMap:
         if c is None:
             c = max([a[1] for a in [i[-1] for i in frames]]) + 1
         frame = cls(r, c)
-        while True:
+        assert isinstance(max_loops, int) and max_loops > 0, "arg: max_loops must be an integer and greater than 0."
+        max_loops = float("inf") if max_loops == None else max_loops
+        count = 0
+        while count < max_loops:
             for i in frames:
                 frame.plots = i
                 if style == 0:
@@ -352,6 +355,7 @@ class GridMap:
                     if correction == 1:
                         correction += 1
                 sleep(time_delay)
+                count += 1
                 print("\033[{}A".format(frame.r + correction))
     
     def __add__(self, _o):
@@ -374,8 +378,8 @@ class GridMap:
             return res
 
     @classmethod
-    def strlist_to_animate(cls, *sl: list, time_delay: int or float = 0.5, r: int = None, c: int = None, correction: int = 1, style: int = 0):
-        cls.animate([cls.str_to_gm(i).listplots for i in sl], time_delay=time_delay, r=r, c=c, correction=correction, style=style)
+    def strlist_to_animate(cls, *sl: list, time_delay: int or float = 0.5, r: int = None, c: int = None, correction: int = 1, style: int = 0, max_loops: int = None):
+        cls.animate([cls.str_to_gm(i).listplots for i in sl], time_delay=time_delay, r=r, c=c, correction=correction, style=style, max_loops=max_loops)
         
     def invert(self):
         plots = []
